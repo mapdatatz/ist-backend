@@ -3,7 +3,7 @@ import logger from '../common/logger'
 
 import '../common/env'
 
-const DB_URI = process.env.MONGO_URI || process.env.LOCAL_CONNECTION_STRING
+const DB_URI = process.env.MONGO_URL || process.env.LOCAL_CONNECTION_STRING
 
 mongoose.connect(DB_URI)
 
