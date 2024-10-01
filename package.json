@@ -9,7 +9,7 @@
     "url": ""
   },
   "engines": {
-    "node": "22.3.0"
+    "node": "18.20.4"
   },
   "scripts": {
     "dev": "nodemon src/server.ts | npx pino-pretty",
