@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+dist/
+.env
+.env.development.local
+.env.production.local
+
+*.DS_Store
+bin/
+
+build
+build/Release
