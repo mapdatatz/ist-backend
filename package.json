@@ -12,8 +12,8 @@
     "node": "18.12.0"
   },
   "scripts": {
-    "dev": "nodemon src/server.ts | npx pino-pretty",
-    "start": "node dist/src/server.js | npx pino-pretty",
+    "dev": "nodemon src/server.ts",
+    "start": "node dist/src/server.js",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "debug-test": "jest --runInBand --detectOpenHandles",
@@ -24,20 +24,7 @@
     "prepare": "husky"
   },
   "keywords": [
-    "typescript",
-    "express",
-    "starter",
-    "boilerplate",
-    "mongoose",
-    "mongodb",
-    "atlas",
-    "pino",
-    "jest",
-    "eslint",
-    "prettier",
-    "husky",
-    "nodemon",
-    "supertest"
+    "IST"
   ],
   "author": "Answary Aidan",
   "license": "ISC",
