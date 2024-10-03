@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 
 import Year from './model'
+import Payment from '../payments/model'
+import Member from '../members/model'
 
 const getYears = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const dbYears = await Year.find().sort({ createdAt: -1 })
+    const dbYears = await Year.find().sort({ year: -1 })
     res.status(200).json(dbYears)
   } catch (error) {
     next(error)
@@ -24,11 +26,47 @@ const getYear = async (req: Request, res: Response, next: NextFunction) => {
 const createYear = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { year, expectedAmount } = req.body
-    const dbExist = await Year.findOne({ year })
-    if (dbExist) {
+    const dbCheck = await Year.findOne({ year })
+    if (dbCheck) {
       return res.status(400).json({ message: `Year ${year} already exists` })
     }
     const dbYear = await Year.create({ year, expectedAmount })
+
+    if (!dbYear) {
+      return res.status(400).json({ message: `Failed to create the year ${year}` })
+    }
+
+    const dbExist = await Payment.findOne({ year })
+    if (dbExist) {
+      return res.status(400).json({ message: `Payment Ledger for year ${year} already exists` })
+    }
+    const dbMembers = await Member.find({ isActive: true }).populate('membership')
+    if (dbMembers.length == 0) {
+      return res.status(400).json({ message: `No active members found` })
+    }
+
+    if (!dbYear) {
+      return res.status(400).json({ message: `Year ${year} not found` })
+    }
+
+    for (let i = 0; i < dbMembers.length; i++) {
+      const dbMember: any = dbMembers[i]
+      await Payment.create({
+        name: dbMember?.name,
+        mobile: dbMember?.mobile,
+        email: dbMember?.email,
+        memberId: dbMember?.memberId,
+        isCorporate: dbMember?.isCorporate,
+        member: dbMember._id,
+        membership: dbMember.membership,
+        year,
+        expectedAmount: dbMember?.membership?.fee,
+        paidAmount: 0,
+        remainAmount: dbMember?.membership?.fee,
+        dueDate: new Date(dbYear.year, 12, 31),
+        yearref: dbYear._id,
+      })
+    }
     res.status(201).json(dbYear)
   } catch (error) {
     next(error)

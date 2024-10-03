@@ -1,18 +1,19 @@
 import { Router } from 'express'
 import paymentController from './controller'
+import authenticateToken from '../../middlewares/verifyAuth';
 
 const router = Router()
 
-router.route('/').post(paymentController.createPayment)
-router.route('/').get(paymentController.getPayments)
-router.route('/:id').get(paymentController.getPayment)
-router.route('/:id').patch(paymentController.updatePayment)
-router.route('/:id').delete(paymentController.deletePayment)
-router.route('/:id/pay').post(paymentController.memberPayment)
-router.route('/data/export').get(paymentController.exportPayments)
-router.route('/data/chart').get(paymentController.getChartTotals)
-router.route('/data/year').get(paymentController.getYearTotals)
-router.route('/members/:member').get(paymentController.memberPayments)
-router.route('/data/category').get(paymentController.getCategoryTotals)
+router.route('/').post(authenticateToken, paymentController.createPayment)
+router.route('/').get(authenticateToken, paymentController.getPayments)
+router.route('/:id').get(authenticateToken, paymentController.getPayment)
+router.route('/:id').patch(authenticateToken, paymentController.updatePayment)
+router.route('/:id').delete(authenticateToken, paymentController.deletePayment)
+router.route('/:id/pay').post(authenticateToken, paymentController.memberPayment)
+router.route('/data/export').get(authenticateToken, paymentController.exportPayments)
+router.route('/data/chart').get(authenticateToken, paymentController.getChartTotals)
+router.route('/data/year').get(authenticateToken, paymentController.getYearTotals)
+router.route('/members/:member').get(authenticateToken, paymentController.memberPayments)
+router.route('/data/category').get(authenticateToken, paymentController.getCategoryTotals)
 
 export default router
