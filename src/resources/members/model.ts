@@ -5,6 +5,7 @@ const AddressSchema = new Schema({
   country: { type: String },
   region: { type: String },
   Municipal: { type: String },
+  district: { type: String },
   ward: { type: String },
   street: { type: String },
   block: { type: String },
