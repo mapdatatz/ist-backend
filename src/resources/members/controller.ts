@@ -147,18 +147,36 @@ const getCountIndi = async (req: Request, res: Response, next: NextFunction) => 
 const updateMember = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-    const { name, email, mobile, membership, dateRegistered, nextUpgrade, website, tinNo, isCorporate, memberNo } = req.body
+    const { name, email, mobile, membership, dateRegistered, nextUpgrade, website, tinNo, isCorporate, memberNo } =
+      req.body
     const dbExist = await Member.findOne({ name })
     if (dbExist && dbExist._id != id) {
       return res.status(400).json({ message: `Member with email ${email} already exists` })
     }
 
-       const year = new Date(dateRegistered).getFullYear()
+    if (dateRegistered) {
+      const year = new Date(dateRegistered).getFullYear()
 
-    const dbYear = await Year.findOne({ year })
-    if (!dbYear) {
-      return res.status(400).json({ message: `Year ${year} not added` })
+      const dbYear = await Year.findOne({ year })
+      if (!dbYear) {
+        return res.status(400).json({ message: `Year ${year} not added` })
+      }
+      const dbMember = await Member.findByIdAndUpdate(id, {
+        name,
+        email,
+        mobile,
+        membership,
+        nextUpgrade,
+        website,
+        tinNo,
+        isCorporate,
+        memberNo,
+        dateRegistered,
+        yearRegistered: year,
+      })
+      res.status(200).json(dbMember)
     }
+
     const dbMember = await Member.findByIdAndUpdate(id, {
       name,
       email,
@@ -169,8 +187,6 @@ const updateMember = async (req: Request, res: Response, next: NextFunction) => 
       tinNo,
       isCorporate,
       memberNo,
-      dateRegistered,
-      yearRegistered: year,
     })
     res.status(200).json(dbMember)
   } catch (error) {
