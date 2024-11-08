@@ -57,8 +57,8 @@ interface IMember extends Document {
   name: string
   email: string
   mobile: string
-  regYear: number
   memberNo: string
+  title: string
   website: string
   tinNo: string
   vrnNo: string
@@ -69,7 +69,8 @@ interface IMember extends Document {
   isFormReviewed: boolean
   isFullRegistered: boolean
   isCorporate: boolean
-  dateRegisterd: Date
+  dateRegistered: Date
+  yearRegistered: number
   dateUpgraded: Date
   isActive: boolean
   addresses: IAddress[]

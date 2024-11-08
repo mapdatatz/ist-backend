@@ -20,11 +20,15 @@ const getPayments = async (req: Request, res: Response, next: NextFunction) => {
     if (year) {
       filters.year = Number(year)
     }
-    const dbMembers = await Payment.find(filters).skip(skip).limit(limit).populate('membership').sort({ createdAt: -1 })
+    const dbPayments = await Payment.find(filters)
+      .skip(skip)
+      .limit(limit)
+      .populate('membership')
+      .sort({ createdAt: -1 })
 
     const count = await Payment.countDocuments(filters)
 
-    res.status(200).json({ data: dbMembers, total: count })
+    res.status(200).json({ data: dbPayments, total: count })
   } catch (error) {
     next(error)
   }
@@ -33,8 +37,8 @@ const getPayments = async (req: Request, res: Response, next: NextFunction) => {
 const getPayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-    const dbMember = await Payment.findById(id).populate('membership')
-    res.status(200).json(dbMember)
+    const dbPayment = await Payment.findById(id).populate('membership')
+    res.status(200).json(dbPayment)
   } catch (error) {
     next(error)
   }
@@ -47,7 +51,7 @@ const createPayment = async (req: Request, res: Response, next: NextFunction) =>
     if (dbExist) {
       return res.status(400).json({ message: `Payment Ledger for year ${year} already exists` })
     }
-    const dbMembers = await Member.find({ isActive: true }).populate('membership')
+    const dbMembers = await Member.find({ isActive: true, yearRegistered: { $gte: year } }).populate('membership')
     if (dbMembers.length == 0) {
       return res.status(400).json({ message: `No active members found` })
     }
@@ -83,8 +87,8 @@ const createPayment = async (req: Request, res: Response, next: NextFunction) =>
 
 const exportPayments = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const dbMembers = await Payment.find().populate('membership')
-    res.status(200).send(dbMembers)
+    const dbPayments = await Payment.find().populate('membership')
+    res.status(200).send(dbPayments)
   } catch (error) {
     next(error)
   }
@@ -97,7 +101,7 @@ const updatePayment = async (req: Request, res: Response, next: NextFunction) =>
     if (dbExist && dbExist._id != id) {
       return res.status(400).json({ message: `Member with email ${email} already exists` })
     }
-    const dbMember = await Payment.findByIdAndUpdate(id, {
+    const dbPayment = await Payment.findByIdAndUpdate(id, {
       fullname,
       email,
       mobile,
@@ -108,7 +112,29 @@ const updatePayment = async (req: Request, res: Response, next: NextFunction) =>
       isCorporate,
       memberNo,
     })
-    res.status(200).json(dbMember)
+    res.status(200).json(dbPayment)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const updatePaydate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+    const { paidDate } = req.body
+    const dbExist = await Payment.findById(id)
+    if (!dbExist) {
+      return res.status(400).json({ message: `Payment do not exist` })
+    }
+
+    const year = new Date(paidDate).getFullYear()
+    if (year != dbExist.year) {
+      return res.status(400).json({ message: `Payment date must be within Ledger year : ${dbExist.year}` })
+    }
+    const dbPayment = await Payment.findByIdAndUpdate(id, {
+      paidDate,
+    })
+    res.status(200).json(dbPayment)
   } catch (error) {
     next(error)
   }
@@ -311,8 +337,8 @@ const getCategoryTotals = async (req: any, res: Response, next: NextFunction) =>
 const deletePayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-    const dbMember = await Payment.findByIdAndDelete(id)
-    res.status(200).json(dbMember)
+    const dbPayment = await Payment.findByIdAndDelete(id)
+    res.status(200).json(dbPayment)
   } catch (error) {
     next(error)
   }
@@ -324,6 +350,7 @@ export default {
   getYearTotals,
   getChartTotals,
   createPayment,
+  updatePaydate,
   exportPayments,
   memberPayments,
   getCategoryTotals,

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import memberController from './controller'
+import upload from '../../middlewares/uploadExcelData'
 import authenticateToken from '../../middlewares/verifyAuth';
 
 const router = Router()
@@ -14,6 +15,7 @@ router.route('/count/all').get(authenticateToken, memberController.getCountAll)
 router.route('/count/corp').get(authenticateToken, memberController.getCountCorp)
 router.route('/count/indi').get(authenticateToken, memberController.getCountIndi)
 router.route('/data/export').get(authenticateToken, memberController.exportMembers)
+router.route('/upload').post(upload.single('file'), memberController.uploadMembers)
 
 // Address
 router.route('/:id/addresses').post(authenticateToken, memberController.addAddress)
