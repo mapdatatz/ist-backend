@@ -209,7 +209,7 @@ const uploadMembers = async (req: any, res: Response, next: NextFunction) => {
           existingMember.isCorporate = row.CORPORATE == 'Y' ? true : false
           existingMember.dateRegistered = new Date(row.REGISTERED)
           await existingMember.save()
-          pass.push(row.EMAIL)
+          pass.push(row.NAME)
           passCount++
         } else {
           // Create new Member if not found
