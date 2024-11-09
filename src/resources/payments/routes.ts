@@ -14,6 +14,7 @@ router.route('/:id/pay').post(authenticateToken, paymentController.memberPayment
 router.route('/data/export').get(authenticateToken, paymentController.exportPayments)
 router.route('/data/chart').get(authenticateToken, paymentController.getChartTotals)
 router.route('/data/year').get(authenticateToken, paymentController.getYearTotals)
+router.route('/:id/update/amount').patch(authenticateToken, paymentController.updateAmount)
 router.route('/members/:member').get(authenticateToken, paymentController.memberPayments)
 router.route('/data/category').get(authenticateToken, paymentController.getCategoryTotals)
 

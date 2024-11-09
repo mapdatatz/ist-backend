@@ -118,6 +118,25 @@ const updatePayment = async (req: Request, res: Response, next: NextFunction) =>
   }
 }
 
+
+const updateAmount = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+    const { expectedAmount } = req.body
+    const dbExist = await Payment.findById(id)
+    if (!dbExist) {
+      return res.status(400).json({ message: `Payment does not exist` })
+    }
+    const dbPayment = await Payment.findByIdAndUpdate(id, {
+      expectedAmount,
+      remainAmount: expectedAmount
+    })
+    res.status(200).json(dbPayment)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const updatePaydate = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
@@ -127,10 +146,6 @@ const updatePaydate = async (req: Request, res: Response, next: NextFunction) =>
       return res.status(400).json({ message: `Payment do not exist` })
     }
 
-    const year = new Date(paidDate).getFullYear()
-    if (year != dbExist.year) {
-      return res.status(400).json({ message: `Payment date must be within Ledger year : ${dbExist.year}` })
-    }
     const dbPayment = await Payment.findByIdAndUpdate(id, {
       paidDate,
     })
@@ -143,7 +158,7 @@ const updatePaydate = async (req: Request, res: Response, next: NextFunction) =>
 const memberPayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
-    const { paidAmount, paymentRef } = req.body
+    const { paidAmount, paymentRef, paidDate } = req.body
     const dbExist = await Payment.findById(id)
     if (dbExist?.isPaid) {
       return res.status(400).json({ message: `Payment already made` })
@@ -152,7 +167,7 @@ const memberPayment = async (req: Request, res: Response, next: NextFunction) =>
       paidAmount,
       remainAmount: 0,
       isPaid: true,
-      paidDate: new Date(),
+      paidDate: paidDate? paidDate : new Date(),
       paymentRef,
     })
     res.status(200).json(dbMember)
@@ -351,6 +366,7 @@ export default {
   getChartTotals,
   createPayment,
   updatePaydate,
+  updateAmount,
   exportPayments,
   memberPayments,
   getCategoryTotals,
