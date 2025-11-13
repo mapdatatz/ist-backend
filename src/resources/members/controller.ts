@@ -214,11 +214,12 @@ const uploadMembers = async (req: any, res: Response, next: NextFunction) => {
 
     for (let row of rows) {
       try {
+        const memberId = await getNextSequenceValue('memberId')
         let existingMember = await Member.findOne({ name: row.NAME })
 
         if (existingMember) {
           // Update existing member
-          existingMember.memberId = row.ID
+          existingMember.memberId = memberId
           existingMember.name = row.NAME
           existingMember.membership = row.MEMBERSHIP
           existingMember.title = row.TITLE
@@ -230,7 +231,7 @@ const uploadMembers = async (req: any, res: Response, next: NextFunction) => {
         } else {
           // Create new Member if not found
           const newMember: IMember = new Member({
-            memberId: row.ID,
+            memberId: memberId,
             name: row.NAME,
             membership: row.MEMBERSHIP,
             title: row.TITLE,
