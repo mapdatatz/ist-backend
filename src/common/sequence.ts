@@ -13,7 +13,7 @@ const getNextSequenceValue = async (sequenceName) => {
   if (!sequenceDocument) {
     sequenceDocument = await Counter.create({
       _id: sequenceName,
-      sequence_value: 595,
+      sequence_value: 100,
     })
   } else {
     sequenceDocument = await Counter.findByIdAndUpdate(sequenceName, { $inc: { sequence_value: 1 } }, { new: true })
