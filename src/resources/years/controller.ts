@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 
 import Year from './model'
-import Payment from '../payments/model'
-import Member from '../members/model'
 
 const getYears = async (req: Request, res: Response, next: NextFunction) => {
   try {
